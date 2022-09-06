@@ -210,6 +210,65 @@ void insert(int num, ptnode* tree)
 		AVL(tree);
 }
 
+void delete(int num, ptnode *tree)
+{
+	ptnode temp;
+	ptnode rr;
+	ptnode ll;
+	ptnode ltemp = NULL;
+	ptnode rtemp = NULL;
+
+	temp = find(*tree, num);
+	if (temp == NULL)
+		return;
+	rr = temp->right;
+	ll = temp->left;
+	if (temp->left == NULL && temp->right == NULL)
+		free(temp);
+	else if ((temp->left == NULL && temp->right)|| (temp->right == NULL && temp->left))
+	{
+		if (temp->left)
+		{
+			temp->key = temp->left->key;
+			free(temp->left);
+		}
+		else
+		{
+			temp->key = temp->right->key;
+			free(temp->right);
+		}
+	}
+	else
+	{
+		while (rr->left)
+		{
+			rtemp = rr;
+			rr = rr->left;
+		}
+		while (ll->right)
+		{
+			ltemp = ll;
+			ll = ll->right;
+		}
+		if (abs(rr->key - temp->key) <= abs(ll->key - temp->key))
+		{
+			temp->key = rr->key;
+			if (rr->right)
+				rtemp->left = rr->right;
+			free(rr);
+		}
+		else
+		{
+			temp->key = ll->key;
+			if (ll->left)
+				ltemp->right = ll->left;
+			free(ll);
+		}
+	}
+	if (abs(high_tree((*tree)->right) - high_tree((*tree)->left)) > 1)
+		AVL(tree);
+}
+
 int main(void)
 {
 	ptnode tree = init();
