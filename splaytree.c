@@ -215,6 +215,34 @@ void insert(int num, ptnode* tree)
 	}
 }
 
+void delete(int num, ptnode* tree)
+{
+	if (*tree == NULL)
+		exit(-1);
+	ptnode tf = find(tree, num);
+	ptnode fre = *tree;
+	ptnode temp = NULL;
+	int max;
+
+	if ((*tree)->left == NULL && (*tree)->right == NULL)
+		free(*tree);
+	if ((*tree)->left == NULL && (*tree)->right != NULL)
+	{
+		temp = (*tree)->right;
+		*tree = temp;
+		free(fre);
+	}
+	if ((*tree)->left && (*tree)->right)
+	{
+		max = findmax((*tree)->left);
+		AVL(&((*tree)->left), max);
+		(*tree)->left->right = (*tree)->right;
+		temp = (*tree)->left;
+		*tree = temp;
+		free(fre);
+	}
+}
+
 int main(void)
 {
 	ptnode tree = init();
