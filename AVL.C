@@ -99,9 +99,10 @@ AVL(ptnode* tree)
 
 	while (abs(high_tree(move->right) - high_tree(move->left)) > 1)
 	{
-		if (save != *tree)
-			head = save;
+		head = save;
 		save = move;
+		if(save == *tree)
+			head = NULL;
 		if (high_tree(move->right) > high_tree(move->left))
 			move = move->right;
 		else
