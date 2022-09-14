@@ -18,6 +18,7 @@ pl init(void)
 }
 
 #左式堆的合并， 插入和删除，相当于特殊的合并
+#还没填好各结点的零路径长度
 pl mert(pl h1, pl h2)
 {
 	pl swap1 = NULL;
