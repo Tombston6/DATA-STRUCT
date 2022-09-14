@@ -1,5 +1,4 @@
 #左式堆，左结点的零路径长度至少与其右兄弟的零路径长度相同
-
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -16,9 +15,8 @@ pl init(void)
 {
 	return NULL;
 }
-
 #左式堆的合并， 插入和删除，相当于特殊的合并
-#还没填好各结点的零路径长度
+#填好各结点的零路径长度
 pl mert(pl h1, pl h2)
 {
 	pl swap1 = NULL;
@@ -43,8 +41,7 @@ pl mert(pl h1, pl h2)
 		swap2 = h1;
 	}
 	h1 = save;
-  
-  #循环结束的条件就是一个左式堆已经合并完
+	#循环结束的条件就是一个左式堆已经合并完
 	while (swap1 && swap2)
 	{
 		if (swap1->key > swap2->key)
@@ -57,25 +54,64 @@ pl mert(pl h1, pl h2)
 			save->right = swap1;
 			swap1 = swap1->right;
 		}
+		if (save->left && save->right)
+		{
+			if (save->left->deep < save->right->deep)
+				save->deep = save->left->deep + 1;
+			else
+				save->deep = save->right->deep + 1;
+		}
+		else
+			save->deep = 0;
 		save = save->right;
 	}
- 
-  #将剩下的没合并的树，合并，为了避免左式树结点的左儿子都没有值，需要在最后合并时交换最后合并结点的左右儿子之后再合并
 	if (swap1)
-	{
-		save->right = save->left;
-		save->left = swap1;
-	}
+		save->right = swap1;
 	if (swap2)
+		save->right = swap2;
+	if (save->left && save->right)
 	{
-		save->right = save->left;
-		save->left = swap2;
+		if (save->left->deep < save->right->deep)
+			save->deep = save->left->deep + 1;
+		else
+			save->deep = save->right->deep + 1;
 	}
-	save = h1->right;
-  
-  #由于合并后的堆破坏了左式树的规则，需要交换左右子树
-	h1->right = h1->left;
-	h1->left = save;
+	else
+		save->deep = 0;
+	if (h1->left && h1->right)
+	{
+		if (h1->left->deep < h1->right->deep)
+			h1->deep = h1->left->deep + 1;
+		else
+			h1->deep = h1->right->deep + 1;
+	}
+	else
+		h1->deep = 0;
+	save = h1;
+
+	while (h1)
+	{
+		if (h1->right && h1->left)
+		{
+			if (h1->right->deep > h1->left->deep)
+			{
+				pl mid = h1->right;
+				h1->right = h1->left;
+				h1->left = mid;
+			}
+		}
+		else
+		{
+			if (h1->right)
+			{
+				pl mid = h1->right;
+				h1->right = h1->left;
+				h1->left = mid;
+			}
+		}
+		h1 = h1->right;
+	}
+	h1 = save;
 	return h1;
 }
 
@@ -113,11 +149,10 @@ int main(void)
 	left_heap = insert(left_heap, 50);
 	left_heap = insert(left_heap, 26);
 	
-	fprintf(stdout, "%d\n", left_heap->key);
-	fprintf(stdout, "%d\n", left_heap->left->key);
-	fprintf(stdout, "%d\n", left_heap->right->left->key);
+	fprintf(stdout, "%d %d\n", left_heap->key, left_heap->deep);
+	fprintf(stdout, "%d %d\n", left_heap->left->key, left_heap->left->deep);
+	fprintf(stdout, "%d %d\n", left_heap->right->left->key, left_heap->right->left->deep);
 	left_heap = deletmin(left_heap);
-	fprintf(stdout, "%d\n", left_heap->key);
-	fprintf(stdout, "%d\n", left_heap->right->left->key);
+	fprintf(stdout, "%d %d\n", left_heap->key, left_heap->deep);
 	return 0;
 }
